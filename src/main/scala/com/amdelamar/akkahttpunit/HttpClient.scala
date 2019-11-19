@@ -1,18 +1,20 @@
 package com.amdelamar.akkahttpunit
 
+import java.util.concurrent.Executors
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.ActorMaterializer
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class HttpClient(url: String, http: HttpExt)
                 (implicit sendHttpRequest: HttpRequest => Future[HttpResponse] = http.singleRequest(_)) {
 
   implicit val system = ActorSystem("client")
   implicit val materializer = ActorMaterializer()
-  implicit val executionContext = system.dispatcher
+  implicit val executionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
 
   def getList() = {
     sendHttpRequest(HttpRequest(HttpMethods.GET, url + "/list"))

@@ -1,5 +1,7 @@
 package com.amdelamar.akkahttpunit
 
+import java.util.concurrent.Executors
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
@@ -7,12 +9,13 @@ import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 
 import scala.collection.mutable
+import scala.concurrent.ExecutionContext
 
 object HttpServer {
 
   implicit val system = ActorSystem("server")
   implicit val materializer = ActorMaterializer()
-  implicit val executionContext = system.dispatcher
+  implicit val executionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
 
   def main(args: Array[String]): Unit = {
 
